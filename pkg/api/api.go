@@ -137,7 +137,7 @@ func (hapi *HasherAPI) getStatsHandler(w http.ResponseWriter, r *http.Request) {
 
 	j, err := json.Marshal(s)
 	if err != nil {
-		http.Error(w, "Could not marshall stats to json", http.StatusInternalServerError)
+		http.Error(w, "Could not marshal stats to json", http.StatusInternalServerError)
 		return
 	}
 
