@@ -27,9 +27,13 @@ func shutdown(hapi *api.HasherAPI) {
 
 func main() {
 
+	flag.Usage = func() {
+		flag.PrintDefaults()
+	}
+
 	log.Printf("Starting Hasher Service...\n\n")
 
-	port := flag.String("addr", "8080", "The port to listen on")
+	port := flag.String("port", "8080", "The port to listen on")
 	flag.Parse()
 
 	hapi := api.NewHasherAPI(*port)
