@@ -82,8 +82,9 @@ func (hapi *HasherAPI) postHashHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (hapi *HasherAPI) getHashHandler(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Path[len("/hash/"):]
 	s := time.Now()
+
+	id := r.URL.Path[len("/hash/"):]
 
 	jobID, err := strconv.Atoi(id)
 	if err != nil {
@@ -107,32 +108,30 @@ func (hapi *HasherAPI) getHashHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprintf(w, fmt.Sprintf("%s", val))
-	hapi.requestTimes = append(hapi.requestTimes, time.Since(s))
+	d := time.Since(s)
+	hapi.requestTimes = append(hapi.requestTimes, d)
 	return
 }
 
 func (hapi *HasherAPI) getStatsHandler(w http.ResponseWriter, r *http.Request) {
 
 	type stats struct {
-		Total   int   `json:"total"`
-		Average int64 `json:"average"`
+		Total   int           `json:"total"`
+		Average time.Duration `json:"average"`
 	}
 
 	var sum time.Duration
 
 	sum = 0
 	for _, v := range hapi.requestTimes {
-		fmt.Println(v)
 		sum += v
 	}
 
-	milli := time.Millisecond
-	conv := sum.Nanoseconds()
-	avg := conv / 2
+	avg := sum / time.Duration(len(hapi.requestTimes))
 
 	s := stats{
 		Total:   hapi.hasher.GetJobCount(),
-		Average: int64(avg / int64(milli)),
+		Average: avg / time.Millisecond,
 	}
 
 	j, err := json.Marshal(s)
