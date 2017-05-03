@@ -99,7 +99,6 @@ func (h *Hasher) hash(jobID int, in string) {
 	h.state.HashedPasswords[jobID] = pw
 	h.mu.Unlock()
 
+	log.Printf("Finished hash for jobID: %d\n", jobID)
 	h.WgJobs.Done()
-
-	defer log.Printf("Finished hash for jobID: %d\n", jobID)
 }
