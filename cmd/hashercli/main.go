@@ -29,6 +29,10 @@ func init() {
 
 func main() {
 
+	flag.Usage = func() {
+		flag.PrintDefaults()
+	}
+
 	addr := flag.String("addr", "http://localhost:8080", "The address to send hash requests to")
 
 	numReq := flag.Int("numReq", 10, "The number of requests to run against the address")
@@ -42,9 +46,9 @@ func main() {
 		go makeHashRequest(addr, i)
 	}
 
-	// Let's wait until we at least have 2 jobs complete before
+	// Let's wait until we at least have 1 job complete before
 	// requesting the password
-	for len(jobIDs) < 2 {
+	for len(jobIDs) < 1 {
 		time.Sleep(500 * time.Millisecond)
 	}
 
@@ -95,9 +99,17 @@ func makePasswordRequest(addr *string) {
 	r := rand.Int63n(700-200) + 200
 	time.Sleep(time.Duration(r) * time.Millisecond)
 
-	l := len(jobIDs) - 1
-	i := rand.Intn(l) + 0
-	jobID := jobIDs[i]
+	var jobID string
+
+	// rand panics when n <= 0
+	if len(jobIDs) > 1 {
+		l := len(jobIDs) - 1
+		i := rand.Intn(l) + 0
+		jobID = jobIDs[i]
+	} else {
+		jobID = jobIDs[0]
+	}
+
 	log.Printf("Requesting JobID: %s\n", jobID)
 	res, err := http.Get(fmt.Sprintf("%s/hash/%s", *addr, jobID))
 	if err != nil {
