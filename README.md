@@ -1,4 +1,4 @@
-# Go Concurrency (Hasher)
+# Go Concurrency ( Hasher )
 
 This project is an exploration of the concurrency techniques used in Golang.
 
